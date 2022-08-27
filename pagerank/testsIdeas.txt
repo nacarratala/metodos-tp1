@@ -1,0 +1,4 @@
+Tests ideas
+
+- Modificar las implementaciones de LILMatrix y COOMatrix para que esten ordenadas y comparar rendimiento
+- Implementar una idea muy naba de matrix para comparar rendimiento

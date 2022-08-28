@@ -23,6 +23,7 @@ int LILMatrix::findValue(vector<pair<int, int>> row, int column){
 }
 
 //TODO: erase when value = 0
+// TODO: ignore pushback when value already exist
 void LILMatrix::setValue(int row, int column, int value) {
     if (matrix.size() > row){
         matrix[row].push_back(make_pair(column, value));

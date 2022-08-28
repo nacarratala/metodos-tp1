@@ -14,6 +14,7 @@ int DOKMatrix::getValue(int row, int column){
 }
 
 //TODO: erase when value = 0
+// TODO: ignore pushback when value already exist
 void DOKMatrix::setValue(int row, int column, int value) {
         auto key = make_pair(row, column);
         matrix.insert(make_pair(key, value));

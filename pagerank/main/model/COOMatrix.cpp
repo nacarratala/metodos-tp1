@@ -14,6 +14,7 @@ int COOMatrix::getValue(int row, int column){
 }
 
 //TODO: erase when value = 0
+// TODO: ignore pushback when value already exist
 void COOMatrix::setValue(int row, int column, int value) {
     auto valueToSet = make_tuple(row, column, value);
     for (int i = 0; i < matrix.size(); i++) {

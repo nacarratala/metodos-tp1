@@ -40,6 +40,8 @@ void CSCMatrix::addColumn(int column){
     }
 }
 
+//TODO: erase when value = 0
+// TODO: ignore pushback when value already exist
 void CSCMatrix::setValue(int row, int column, int value) {
     if (column + 1 >= ia.size()) {
         addColumn(column);

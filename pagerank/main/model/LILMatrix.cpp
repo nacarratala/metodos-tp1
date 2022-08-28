@@ -38,5 +38,4 @@ void LILMatrix::setValue(int row, int column, int value) {
 
 void LILMatrix::size(){
     cout << matrix.size() << std::endl;
-
 }

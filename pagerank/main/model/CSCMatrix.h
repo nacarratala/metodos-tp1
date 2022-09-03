@@ -15,15 +15,22 @@ private:
     vector<int> a;
     vector<int> ja;
     vector<int> ia;
+
     void addColumn(int column);
+
     int getNonNullElementsUntilColumn(int column);
+
     int getNonNullElementsInColumn(int column);
+
     void updateRowIndex(int x, int pos);
+
     void updateElements(int x, int pos);
 
 public:
     int getValue(int row, int column);
+
     void setValue(int row, int column, int value);
+
     void size();
 
 };

@@ -4,20 +4,117 @@
 
 #include "LILMatrix.h"
 #include <algorithm>
+
 using namespace std;
 
 LILMatrix::LILMatrix() :
         m_rows(0),
         m_columns(0),
         matrix(lilmatrix_rows_t(0)),
-        m_size(0) {}
+        m_size(0) {
+}
 
+/*
 // Inicializamos un vector con vectores representando filas vacias.
 LILMatrix::LILMatrix(int rows, int columns)
-        : m_rows(rows),
-          m_columns(columns),
-          matrix(lilmatrix_rows_t(0)),
-          m_size(0) {}
+: m_rows(rows),
+  m_columns(columns),
+  matrix(lilmatrix_rows_t(0)),
+  m_size(0) {}
+*/
+
+int LILMatrix::getValue(int row, int column) {
+    auto itRows = findLowerBoundRow(row);
+    // std::cout << "row: " << itRows->first << std::endl;
+    if (itRows->first != row) return 0;
+    auto itCols = findLowerBoundCol(itRows->second, column);
+    // std::cout << "col: " << itCols->first << std::endl;
+    if (itCols->first != column) return 0;
+    return itCols->second;
+}
+
+void LILMatrix::setValue(int row, int column, int value) {
+    assert(row > 0 && "Row out of bounds");
+    assert(column > 0 && "Column out of bounds");
+    // std::cout << "setValue " << row << ", " << column << ", " << value << std::endl;
+    auto itRow = findLowerBoundRow(row);
+
+    // Caso donde no hay filas
+    //if (itRow == matrix.end()) {
+    if (matrix.empty()) {
+        matrix.push_back(lilmatrix_row_t(row, lilmatrix_cols_t(0)));
+        auto &row_elem = matrix.back();
+        row_elem.second.emplace_back(column, value);
+        // std::cout << "row: " << matrix[0].first  << std::endl;
+        // std::cout << "col: " << matrix[0].second[0].first  << std::endl;
+        // std::cout << "value: " << matrix[0].second[0].second  << std::endl;
+        m_rows = row;
+        m_columns = column;
+        m_size++;
+        return;
+    }
+
+    // Caso donde hay filas pero no es la buscada (insertamos de forma ordenada)
+    if (itRow->first != row) {
+        // std::cout << itRow-> first << std::endl;
+        itRow = matrix.insert(itRow, lilmatrix_row_t(row, lilmatrix_cols_t(0)));
+        auto &row_elem = itRow->second;
+        row_elem.emplace_back(column, value);
+        // std::cout << "row: " << itRow->first << std::endl;
+        // std::cout << "col: " << itRow->second[0].first  << std::endl;
+        // std::cout << "value: " << itRow->second[0].second  << std::endl;
+        m_rows = m_rows > row ? m_rows : row;
+        m_columns = m_columns > column ? m_columns : column;
+        m_size++;
+        return;
+    }
+
+    // Caso donde se encontro la fila, hay que hacer busqueda binaria en columnas
+    auto &row_elem = itRow->second;
+    auto itCol = findLowerBoundCol(row_elem, column);
+    if (itCol == row_elem.end() && value != 0) {
+        row_elem.emplace_back(column, value);
+        m_size++;
+        m_columns = m_columns > column ? m_columns : column;
+        return;
+    }
+
+    if (itCol->first != column && value != 0) {
+        row_elem.insert(itCol, lilmatrix_value_t(column, value));
+        m_size++;
+        m_columns = m_columns > column ? m_columns : column;
+        return;
+    }
+
+    if (itCol->first == column) {
+        if (value != 0) {
+            itCol->second = value;
+            return;
+        }
+        row_elem.erase(itCol);
+        m_size--;
+        if (column == m_columns) {
+            m_columns = findUpperBoundColumn();
+        }
+        if (row_elem.empty()) {
+            matrix.erase(findLowerBoundRow(row));
+            if (m_rows == row)
+                m_rows = findUpperBoundRow();
+        }
+    }
+}
+
+int LILMatrix::size() {
+    return matrix.size();
+}
+
+int LILMatrix::rows() {
+    return m_rows;
+}
+
+int LILMatrix::columns() {
+    return m_columns;
+}
 
 //https://www.includehelp.com/stl/std-lower_bound-function-with-example-in-cpp-stl.aspx?ref=rp
 lilmatrix_rows_t::iterator LILMatrix::findLowerBoundRow(int row) {
@@ -43,82 +140,20 @@ lilmatrix_cols_t::iterator LILMatrix::findLowerBoundCol(lilmatrix_cols_t &cols, 
             });
 }
 
-int LILMatrix::getValue(int row, int column) {
-    auto itRows = findLowerBoundRow(row);
-    // std::cout << "row: " << itRows->first << std::endl;
-    if (itRows->first != row) return 0;
-
-    auto itCols = findLowerBoundCol(itRows->second, column);
-    // std::cout << "col: " << itCols->first << std::endl;
-    if (itCols->first != column) return 0;
-
-    return itCols->second;
+int LILMatrix::findUpperBoundRow() {
+    if (matrix.empty())
+        return 0;
+    return matrix.end()->first;
 }
 
-void LILMatrix::setValue(int row, int column, int value) {
-    // std::cout << "setValue " << row << ", " << column << ", " << value << std::endl;
-    auto itRow = findLowerBoundRow(row);
-
-    // Caso donde no hay filas
-    if (itRow == matrix.end()) {
-        matrix.push_back(lilmatrix_row_t(row, lilmatrix_cols_t(0)));
-        auto &row_elem = matrix.back();
-        row_elem.second.emplace_back(column, value);
-        // std::cout << "row: " << matrix[0].first  << std::endl;
-        // std::cout << "col: " << matrix[0].second[0].first  << std::endl;
-        // std::cout << "value: " << matrix[0].second[0].second  << std::endl;
-        m_size++;
-        return;
-    }
-
-    // Caso donde hay filas pero no es la buscada (insertamos de forma ordenada)
-    if (itRow->first != row) {
-        // std::cout << itRow-> first << std::endl;
-        itRow = matrix.insert(itRow, lilmatrix_row_t(row, lilmatrix_cols_t(0)));
-        auto &row_elem = itRow->second;
-        row_elem.emplace_back(column, value);
-        // std::cout << "row: " << itRow->first << std::endl;
-        // std::cout << "col: " << itRow->second[0].first  << std::endl;
-        // std::cout << "value: " << itRow->second[0].second  << std::endl;
-        m_size++;
-        return;
-    }
-
-    // Caso donde se encontro la fila, hay que hacer busqueda binaria en columnas
-    auto &row_elem = itRow->second;
-    auto itCol = findLowerBoundCol(row_elem, column);
-    if (itCol == row_elem.end() && value != 0) {
-        row_elem.emplace_back(column, value);
-        m_size++;
-        return;
-    }
-
-    if (itCol->first != column && value != 0) {
-
-        row_elem.insert(itCol, lilmatrix_value_t(column, value));
-        m_size++;
-        return;
-    }
-
-    if (itCol->first == column) {
-        if (value != 0) {
-            itCol->second = value;
-            return;
+int LILMatrix::findUpperBoundColumn() {
+    auto maxColumn = 0;
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[i].second.size(); j++) {
+            if (matrix[i].second[j].first > maxColumn) {
+                maxColumn = matrix[i].second[j].first;
+            }
         }
-        row_elem.erase(itCol);
-        m_size--;
-        if (row_elem.empty()) matrix.erase(findLowerBoundRow(row));
     }
-}
-
-int LILMatrix::size() {
-    return matrix.size();
-}
-
-int LILMatrix::rows() {
-    return m_rows;
-}
-
-int LILMatrix::columns() {
-    return m_columns;
+    return maxColumn;
 }

@@ -9,7 +9,7 @@ using namespace std;
 #ifndef PAGERANK_LILMATRIX_H
 #define PAGERANK_LILMATRIX_H
 
-using lilmatrix_value_t = std::pair<int, int>;
+using lilmatrix_value_t = std::pair<int, double>;
 using lilmatrix_cols_t = std::vector<lilmatrix_value_t>;
 using lilmatrix_row_t = std::pair<int, lilmatrix_cols_t>;
 using lilmatrix_rows_t = std::vector<lilmatrix_row_t>;
@@ -18,7 +18,6 @@ class LILMatrix {
 
 
 private:
-    LILMatrix(ifstream &inputFile);
 
     lilmatrix_rows_t matrix;
     int m_rows;
@@ -36,21 +35,25 @@ private:
 public:
     LILMatrix();
 
+    LILMatrix(int size, ifstream &inputFile);
+
     int size();
 
     int rows();
 
     int columns();
 
-    int getValue(int row, int column);
+    double getValue(int row, int column);
 
     int getPageGrade(int column);
 
-    void setValue(int row, int column, int value);
+    void setValue(int row, int column, double value);
 
-    void multiplicationByScalar(int scalar);
+    void multiplicationByScalar(double scalar);
 
-    LILMatrix(int size, ifstream &inputFile);
+    void multiplicationByTriangularMatrix(vector<double> triangularMatrix);
+
+    void identitySubstractSelf();
 };
 
 #endif

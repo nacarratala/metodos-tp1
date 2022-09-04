@@ -15,20 +15,19 @@ LILMatrix::LILMatrix() :
         m_size(0) {
 }
 
-LILMatrix::LILMatrix(int links, ifstream& inputFile) :
-    m_rows(0),
-    m_columns(0),
-    m_size(0),
-    matrix(lilmatrix_rows_t(0))
-    {
-        for (int i = 0; i < links; i++){
-            int srcPage,dstPage;
-            inputFile>>srcPage>>dstPage;
-            setValue(dstPage, srcPage, 1);
-        }
+LILMatrix::LILMatrix(int links, ifstream &inputFile) :
+        m_rows(0),
+        m_columns(0),
+        m_size(0),
+        matrix(lilmatrix_rows_t(0)) {
+    for (int i = 0; i < links; i++) {
+        int srcPage, dstPage;
+        inputFile >> srcPage >> dstPage;
+        setValue(dstPage, srcPage, 1);
     }
+}
 
-int LILMatrix::getValue(int row, int column) {
+double LILMatrix::getValue(int row, int column) {
     auto itRows = findLowerBoundRow(row);
     // std::cout << "row: " << itRows->first << std::endl;
     if (itRows->first != row) return 0;
@@ -38,7 +37,7 @@ int LILMatrix::getValue(int row, int column) {
     return itCols->second;
 }
 
-void LILMatrix::setValue(int row, int column, int value) {
+void LILMatrix::setValue(int row, int column, double value) {
     assert(row > 0 && "Row out of bounds");
     assert(column > 0 && "Column out of bounds");
     // std::cout << "setValue " << row << ", " << column << ", " << value << std::endl;
@@ -108,21 +107,9 @@ void LILMatrix::setValue(int row, int column, int value) {
     }
 }
 
-int LILMatrix::size() {
-    return m_size;
-}
-
-int LILMatrix::rows() {
-    return m_rows;
-}
-
-int LILMatrix::columns() {
-    return m_columns;
-}
-
 int LILMatrix::getPageGrade(int column) {
     int res = 0;
-    for (int i = 1; i <= matrix.size(); i++){
+    for (int i = 1; i <= matrix.size(); i++) {
         res += getValue(i, column);
     }
     return res;
@@ -160,26 +147,58 @@ int LILMatrix::findUpperBoundRow() {
 
 int LILMatrix::findUpperBoundColumn() {
     auto maxColumn = 0;
-    for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < matrix[i].second.size(); j++) {
-            if (matrix[i].second[j].first > maxColumn) {
-                maxColumn = matrix[i].second[j].first;
+    for (auto &i: matrix) {
+        for (auto &j: i.second) {
+            if (j.first > maxColumn) {
+                maxColumn = j.first;
             }
         }
     }
     return maxColumn;
 }
 
-void LILMatrix::multiplicationByScalar(int scalar) {
-    if (scalar == 0){
+void LILMatrix::multiplicationByScalar(double scalar) {
+    if (scalar == 0) {
         matrix = lilmatrix_rows_t(0);
         m_size = 0;
         m_columns = 0;
         m_rows = 0;
     }
-    for (auto & i : matrix){
-        for (auto & j : i.second){
+    for (auto &i: matrix) {
+        for (auto &j: i.second) {
             j.second = j.second * scalar;
         }
     }
+}
+
+void LILMatrix::multiplicationByTriangularMatrix(vector<double> triangularMatrix) {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[i].second.size(); j++) {
+            matrix[i].second[j].second = matrix[i].second[j].second * triangularMatrix[i];
+        }
+    }
+}
+
+void LILMatrix::identitySubstractSelf() {
+    for (int i = 0; i < matrix.size(); i++) {
+        for (int j = 0; j < matrix[i].second.size(); j++) {
+            if (i == j) {
+                matrix[i].second[j].second = 1 - matrix[i].second[j].second;
+            } else {
+                matrix[i].second[j].second = (-1) * matrix[i].second[j].second;
+            }
+        }
+    }
+}
+
+int LILMatrix::size() {
+    return m_size;
+}
+
+int LILMatrix::rows() {
+    return m_rows;
+}
+
+int LILMatrix::columns() {
+    return m_columns;
 }

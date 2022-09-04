@@ -18,6 +18,8 @@ class LILMatrix {
 
 
 private:
+    LILMatrix(ifstream &inputFile);
+
     lilmatrix_rows_t matrix;
     int m_rows;
     int m_columns;
@@ -34,7 +36,6 @@ private:
 public:
     LILMatrix();
 
-    //LILMatrix(int rows, int columns);
     int size();
 
     int rows();
@@ -43,9 +44,13 @@ public:
 
     int getValue(int row, int column);
 
+    int getPageGrade(int column);
+
     void setValue(int row, int column, int value);
 
+    void multiplicationByScalar(int scalar);
 
+    LILMatrix(int size, ifstream &inputFile);
 };
 
 #endif

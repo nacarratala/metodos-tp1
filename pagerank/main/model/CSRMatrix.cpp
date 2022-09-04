@@ -40,7 +40,7 @@ void CSRMatrix::addRow(int row) {
     }
 }
 
-//TODO: erase when value = 0
+// TODO: erase when value = 0
 // TODO: ignore pushback when value already exist
 void CSRMatrix::setValue(int row, int column, int value) {
     if (row + 1 >= ia.size()) {

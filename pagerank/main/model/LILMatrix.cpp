@@ -4,6 +4,7 @@
 
 #include "LILMatrix.h"
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -14,14 +15,18 @@ LILMatrix::LILMatrix() :
         m_size(0) {
 }
 
-/*
-// Inicializamos un vector con vectores representando filas vacias.
-LILMatrix::LILMatrix(int rows, int columns)
-: m_rows(rows),
-  m_columns(columns),
-  matrix(lilmatrix_rows_t(0)),
-  m_size(0) {}
-*/
+LILMatrix::LILMatrix(int links, ifstream& inputFile) :
+    m_rows(0),
+    m_columns(0),
+    m_size(0),
+    matrix(lilmatrix_rows_t(0))
+    {
+        for (int i = 0; i < links; i++){
+            int srcPage,dstPage;
+            inputFile>>srcPage>>dstPage;
+            setValue(dstPage, srcPage, 1);
+        }
+    }
 
 int LILMatrix::getValue(int row, int column) {
     auto itRows = findLowerBoundRow(row);
@@ -40,7 +45,6 @@ void LILMatrix::setValue(int row, int column, int value) {
     auto itRow = findLowerBoundRow(row);
 
     // Caso donde no hay filas
-    //if (itRow == matrix.end()) {
     if (matrix.empty()) {
         matrix.push_back(lilmatrix_row_t(row, lilmatrix_cols_t(0)));
         auto &row_elem = matrix.back();
@@ -105,7 +109,7 @@ void LILMatrix::setValue(int row, int column, int value) {
 }
 
 int LILMatrix::size() {
-    return matrix.size();
+    return m_size;
 }
 
 int LILMatrix::rows() {
@@ -114,6 +118,14 @@ int LILMatrix::rows() {
 
 int LILMatrix::columns() {
     return m_columns;
+}
+
+int LILMatrix::getPageGrade(int column) {
+    int res = 0;
+    for (int i = 1; i <= matrix.size(); i++){
+        res += getValue(i, column);
+    }
+    return res;
 }
 
 //https://www.includehelp.com/stl/std-lower_bound-function-with-example-in-cpp-stl.aspx?ref=rp
@@ -156,4 +168,18 @@ int LILMatrix::findUpperBoundColumn() {
         }
     }
     return maxColumn;
+}
+
+void LILMatrix::multiplicationByScalar(int scalar) {
+    if (scalar == 0){
+        matrix = lilmatrix_rows_t(0);
+        m_size = 0;
+        m_columns = 0;
+        m_rows = 0;
+    }
+    for (auto & i : matrix){
+        for (auto & j : i.second){
+            j.second = j.second * scalar;
+        }
+    }
 }

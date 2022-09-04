@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "model/DOKMatrix.h"
 #include "model/LILMatrix.h"
 #include "model/COOMatrix.h"
@@ -7,54 +8,48 @@
 
 using namespace std;
 
-int main() {
-    cout << "DOKMatrix " << endl;
-    DOKMatrix dokMatrix(4,4);
-    dokMatrix.size();
-    dokMatrix.setValue(0, 0, 4);
-	cout << dokMatrix.size() << endl;
-	cout << dokMatrix.rows() << endl;
-	cout << dokMatrix.columns() << endl;
-    cout << dokMatrix.getValue(0, 0) << endl;
-    cout << dokMatrix.getValue(0, 1) << endl;
-    cout << "LILMatrix " << endl;
-	
-	// LILMatrix lilMatrix(3,3);
-    // lilMatrix.size();
-    // lilMatrix.setValue(0, 0, 4);
-    // lilMatrix.size();
-    // cout << lilMatrix.getValue(0, 0) << endl;
-    // cout << lilMatrix.getValue(0, 1) << endl;
-    // cout << "COOMatrix " << endl;
-	
-    auto cooMatrix = *new COOMatrix();
-    cooMatrix.size();
-    cooMatrix.setValue(0, 0, 4);
-    cooMatrix.size();
-    cout << cooMatrix.getValue(0, 0) << endl;
-    cout << cooMatrix.getValue(0, 1) << endl;
-    cout << "CSRMatrix " << endl;
-    auto csrMatrix = *new CSRMatrix();
-    csrMatrix.size();
-    csrMatrix.setValue(0, 0, 7);
-    csrMatrix.setValue(0, 1, 8);
-    csrMatrix.setValue(1, 0, 1);
-    cout << csrMatrix.getValue(0, 0) << endl;
-    cout << csrMatrix.getValue(0, 1) << endl;
-    cout << csrMatrix.getValue(1, 0) << endl;
-    cout << csrMatrix.getValue(5, 5) << endl;
-    csrMatrix.size();
-    cout << "CSCMatrix " << endl;
-    auto cscMatrix = *new CSCMatrix();
-    cscMatrix.size();
-    cscMatrix.setValue(0, 0, 7);
-    cscMatrix.setValue(3, 0, 8);
-    cscMatrix.setValue(0, 1, 9);
-    cscMatrix.setValue(3, 0, 18);
-    cout << cscMatrix.getValue(0, 0) << endl;
-    cout << cscMatrix.getValue(3, 0) << endl;
-    cout << cscMatrix.getValue(0, 1) << endl;
-    cout << cscMatrix.getValue(5, 5) << endl;
-    cscMatrix.size();
+int main(int argc, char **argv) {
+    if(argc != 3){
+        printf("Cantidad de parametros incorrecta.\n");
+        return 1;
+    }
+
+    char* inputFile = argv[1];
+    double p = atof(argv[2]);
+
+    ifstream fileInput;
+    fileInput.open(inputFile);
+    int pages;
+    int links;
+    fileInput>>pages>>links;
+
+    LILMatrix W(links, fileInput);
+
+    vector<double> D(pages);
+    for (int i = 0; i <= pages; i++){
+        double pageGrade = W.getPageGrade(i+1);
+        D[i] = pageGrade == 0 ? 0 : 1 / pageGrade;
+    }
+
+    vector<double> z(pages);
+    for (int i = 0; i < pages; i++){
+        double pageGrade = W.getPageGrade(i+1);
+        z[i] = pageGrade == 0 ? 1.0 / pages : (1 - p) / pages;
+    }
+
+    W.multiplicationByScalar(2);
+
+    vector<int> e(pages, 1);
+
+    ofstream Output;
+    Output.open("/Users/nacarratala/Desktop/test.txt");
+    Output << "W" << "\n";
+    Output << W.size() << "\n";
+    Output << W.columns() << "\n";
+    Output << W.rows() << "\n";
+    Output << "\n" << "\n";
+
+    Output.close();
     return 0;
+
 }

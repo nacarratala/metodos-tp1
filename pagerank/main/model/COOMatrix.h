@@ -4,6 +4,7 @@
 #include <tuple>
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ using namespace std;
 
 class COOMatrix {
 private:
-    vector<tuple<int, int, int>> matrix;
+    vector<tuple<int, int, int> > matrix;
 
 public:
     int getValue(int row, int column);

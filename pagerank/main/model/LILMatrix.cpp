@@ -5,6 +5,7 @@
 #include "LILMatrix.h"
 #include <algorithm>
 #include <fstream>
+#include <assert.h>
 
 using namespace std;
 

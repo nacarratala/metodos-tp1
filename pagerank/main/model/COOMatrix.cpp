@@ -4,9 +4,9 @@
 
 #include "COOMatrix.h"
 
-int COOMatrix::getValue(int row, int column){
-    for (int i = 0; i < matrix.size(); i++){
-        if (get<0>(matrix[i]) == row && get<1>(matrix[i]) == column){
+int COOMatrix::getValue(int row, int column) {
+    for (int i = 0; i < matrix.size(); i++) {
+        if (get<0>(matrix[i]) == row && get<1>(matrix[i]) == column) {
             return get<2>(matrix[i]);
         }
     }

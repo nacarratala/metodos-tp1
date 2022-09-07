@@ -16,7 +16,8 @@ public:
 
     static void triangulation(LILMatrix &A, std::vector<double> &b);
 
-    static void triangulate_rows(lilmatrix_rows_t::iterator row_j, lilmatrix_rows_t::iterator row_i, std::vector<double> &b);
+    static void triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it, lilmatrix_rows_t::iterator row_i_it,
+                                 std::vector<double> &b);
 };
 
 #endif

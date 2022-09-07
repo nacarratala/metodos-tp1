@@ -11,7 +11,7 @@ using namespace std;
 // TODO: chequer int i = 0 (difere con pseudocodigo
 
 
-void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it, lilmatrix_rows_t::iterator row_i_it,
+void Metnum::triangulate_rows_backup(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it, lilmatrix_rows_t::iterator row_i_it,
                               std::vector<double> &b)
 {
     auto row_i = row_i_it->first;
@@ -52,20 +52,115 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
         if (!cols_row_j_reached_end) col_row_j = col_it_j->first;
 
 
-//        if (col_row_j < row_i_it ->first)
-//        {
-//            /* A la izquierda de la diagonal tienen que quedar ceros, esto podria no ser asi por error de redondeo
-//             * asi que forzamos el cero. Los elementos a la izquierda de la diagonal son los que tienen col_row_j < i.
-//             * Un elemento cero implica borrar el elemento de la fila. */
-//            row_j_it->second.erase(col_it_j);
-//        }
-//        else if (col_row_j  == col_row_i )
-        if (cols_row_j_reached_end || col_row_j > col_row_i)
+        if (cols_row_j_reached_end)
         {
             auto a_jk = col_it_i->second;
             auto new_a_jk = (-m) * a_jk;
             auto element = make_pair(col_it_i->first,new_a_jk);
             row_j_it->second.insert(col_it_j, element);
+            A.m_size++;
+            col_it_i++;
+        }
+        else if (!cols_row_j_reached_end && col_row_j > col_row_i)
+        {
+            auto a_jk = col_it_i->second;
+            auto new_a_jk = (-m) * a_jk;
+            auto element = make_pair(col_it_i->first,new_a_jk);
+            row_j_it->second.insert(col_it_j, element);
+            A.m_size++;
+
+
+            //TODO: chequear que si colt_it_j esta aputando al nuevo elemento o al siguiente del nuevo, tal vez haya que avanzarlo
+            col_it_i++;
+            col_it_j++;
+
+
+        }
+            // CASO DONDE LA RESTADORA ES MAYOR QUE LA RESTADA
+        else if (col_row_j == col_row_i ) {
+            auto a_jk = col_it_j->second;
+            auto a_ik = col_it_i->second;
+            auto new_a_jk = a_jk - m * a_ik;
+
+
+            if (new_a_jk == 0)
+            {
+                row_j_it->second.erase(col_it_j);
+                A.m_size--;
+            }
+            else
+            {
+                col_it_j->second = new_a_jk;
+                col_it_j++;
+            }
+
+            col_it_i++;
+
+
+        }
+        else
+        {
+            col_it_j++;
+        }
+
+        cols_row_i_reached_end = (col_it_i == row_i_it->second.end());
+        cols_row_j_reached_end = (col_it_j == row_j_it->second.end());
+        keep_row_transformation = (!cols_row_i_reached_end);
+
+    }
+
+}
+
+
+void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it, lilmatrix_rows_t::iterator row_i_it,
+                              std::vector<double> &b)
+{
+    auto row_i = row_i_it->first;
+    auto row_j = row_j_it ->first;
+
+    auto col_it_i = row_i_it ->second.begin();
+    auto col_it_j = row_j_it ->second.begin();
+
+    bool cols_row_i_reached_end = (col_it_i == row_i_it->second.end());
+    bool cols_row_j_reached_end = (col_it_j == row_j_it->second.end());
+
+    auto col_row_i = col_it_i->first;
+    auto col_row_j = col_it_j->first;
+
+    double m = 0.0;
+    if (col_row_j == col_row_i)
+    {
+        auto a_ji = col_it_j->second;
+        auto a_ii = col_it_i->second;
+        m = a_ji / a_ii ;
+    }
+    b[row_j] = b[row_j] - m * b[row_i];
+
+    bool keep_row_transformation = (!cols_row_i_reached_end)  && (m != 0.0);
+    while(keep_row_transformation)
+    {
+        row_i = row_i_it->first;
+        row_j = row_j_it ->first;
+
+        col_row_i = col_it_i->first;
+        if (!cols_row_j_reached_end) col_row_j = col_it_j->first;
+
+
+        if (cols_row_j_reached_end)
+        {
+            auto a_jk = col_it_i->second;
+            auto new_a_jk = (-m) * a_jk;
+            auto element = make_pair(col_it_i->first,new_a_jk);
+            col_it_j = row_j_it->second.insert(col_it_j, element);
+            A.m_size++;
+            col_it_i++;
+        }
+        else if (!cols_row_j_reached_end && col_row_j > col_row_i)
+        {
+            auto a_jk = col_it_i->second;
+            auto new_a_jk = (-m) * a_jk;
+            auto element = make_pair(col_it_i->first,new_a_jk);
+            col_it_j = row_j_it->second.insert(col_it_j, element);
             A.m_size++;
 
 
@@ -84,7 +179,7 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
 
             if (new_a_jk == 0)
             {
-                row_j_it->second.erase(col_it_j);
+                col_it_j = row_j_it->second.erase(col_it_j);
                 A.m_size--;
             }
             else

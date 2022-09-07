@@ -16,6 +16,12 @@ LILMatrix::LILMatrix() :
         m_size(0) {
 }
 
+LILMatrix::LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size) :
+        m_rows(rows),
+        m_columns(columns),
+        matrix(m_rows_t),
+        m_size(size){}
+
 LILMatrix::LILMatrix(int links, ifstream &inputFile) :
         m_rows(0),
         m_columns(0),
@@ -24,7 +30,7 @@ LILMatrix::LILMatrix(int links, ifstream &inputFile) :
     for (int i = 0; i < links; i++) {
         int srcPage, dstPage;
         inputFile >> srcPage >> dstPage;
-        setValue(dstPage, srcPage, 1);
+        setValue(dstPage-1, srcPage-1, 1);
     }
 }
 
@@ -39,8 +45,8 @@ double LILMatrix::getValue(int row, int column) {
 }
 
 void LILMatrix::setValue(int row, int column, double value) {
-    assert(row > 0 && "Row out of bounds");
-    assert(column > 0 && "Column out of bounds");
+    assert(row >= 0 && "Row out of bounds");
+    assert(column >= 0 && "Column out of bounds");
     // std::cout << "setValue " << row << ", " << column << ", " << value << std::endl;
     auto itRow = findLowerBoundRow(row);
 
@@ -57,6 +63,11 @@ void LILMatrix::setValue(int row, int column, double value) {
         m_size++;
         return;
     }
+
+//    if (itRow == matrix.end())
+//        /* Si no encuentra cota inferior es porque todos los elmenetos son mayores entonces apunta a end.
+//         * Tenemos que insertar uno antes para que no sea el final*/
+//        itRow = itRow - 1;
 
     // Caso donde hay filas pero no es la buscada (insertamos de forma ordenada)
     if (itRow->first != row) {
@@ -110,7 +121,7 @@ void LILMatrix::setValue(int row, int column, double value) {
 
 int LILMatrix::getPageGrade(int column) {
     int res = 0;
-    for (int i = 1; i <= matrix.size(); i++) {
+    for (int i = 0; i < matrix.size(); i++) {
         res += getValue(i, column);
     }
     return res;
@@ -125,7 +136,7 @@ lilmatrix_rows_t::iterator LILMatrix::findLowerBoundRow(int row) {
             [](const lilmatrix_row_t &row_element, int value) {
                 int row_num = row_element.first; // row_element.first
                 // std::cout << "value: " << value << " row_num: " << row_num;
-                return value < row_num;
+                return value > row_num;
             });
 }
 
@@ -136,7 +147,7 @@ lilmatrix_cols_t::iterator LILMatrix::findLowerBoundCol(lilmatrix_cols_t &cols, 
             column,
             [](const lilmatrix_value_t &col_element, int value) {
                 int col_num = col_element.first; // row_element.first
-                return value < col_num;
+                return value > col_num;
             });
 }
 
@@ -181,25 +192,49 @@ void LILMatrix::multiplicationByTriangularMatrix(vector<double> triangularMatrix
 }
 
 void LILMatrix::identitySubstractSelf() {
-    for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < matrix[i].second.size(); j++) {
-            if (i == j) {
-                matrix[i].second[j].second = 1 - matrix[i].second[j].second;
-            } else {
-                matrix[i].second[j].second = (-1) * matrix[i].second[j].second;
+//    for (int i = 0; i < matrix.size(); i++) {
+//        for (int j = 0; j < matrix[i].second.size(); j++) {
+//            if (i == j) {
+//                matrix[i].second[j].second = 1 - matrix[i].second[j].second;
+//            } else {
+//                matrix[i].second[j].second = (-1) * matrix[i].second[j].second;
+//            }
+//        }
+//    }
+    //TODO: AProvechar la estructura LIL para que sea mas performante
+    //El codigo anterior no hace lo que tiene que hacer
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < m_columns; ++j) {
+            if (i == j)
+            {
+                auto value = 1 - getValue(i,j);
+                setValue(i, j, value);
+            }
+            else
+            {
+                auto value = (-1) * getValue(i,j);
+                setValue(i, j, value);
             }
         }
     }
 }
 
+
 int LILMatrix::size() {
     return m_size;
 }
+
 
 int LILMatrix::rows() {
     return m_rows;
 }
 
+
 int LILMatrix::columns() {
     return m_columns;
+}
+
+LILMatrix LILMatrix::row(int row)
+{
+
 }

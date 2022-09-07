@@ -13,8 +13,10 @@ void triangulation(LILMatrix& A, vector<double>& b){
     int n = A.rows();
     for(int i = 0; i < n-1; i++){
         for(int j = i+1; j < n; j++){
-            double m = A.getValue(j,i)/A.getValue(i,i);
-            for (int k = i; k < n; k++){
+            auto a_ji = A.getValue(j,i);
+            auto a_ii = A.getValue(i,i);
+            double m = a_ji / a_ii ;
+            for (int k = i; k < n; k++) {
                 auto a_jk = A.getValue(j,k);
                 auto a_ik = A.getValue(i,k);
                 A.setValue(j, k, a_jk - m * a_ik);
@@ -25,7 +27,7 @@ void triangulation(LILMatrix& A, vector<double>& b){
 }
 
 vector<double> Gauss::gaussianElimination(LILMatrix& A, vector<double>& b){
-    int n = A.size();
+    int n = A.rows(); // Matriz cuadrada rows == columns.
     triangulation(A,b);
     vector<double> result;
     for(int i = 0; i < n; i++){

@@ -145,7 +145,7 @@ void Metnum::triangulation(LILMatrix& A, vector<double>& b){
     auto row_j_it = (row_i_it+1);
 
     bool row_i_it_reached_end = (row_i_it == A.matrix.end());
-
+    bool row_j_it_reached_end = (row_j_it == A.matrix.end());
 
     bool keep_triangulating = !row_i_it_reached_end;
     while (keep_triangulating)
@@ -156,13 +156,16 @@ void Metnum::triangulation(LILMatrix& A, vector<double>& b){
 
         triangulate_rows(A, row_j_it, row_i_it, b);
 
-        bool row_j_it_reached_end = (row_j_it == A.matrix.end());
+        row_j_it_reached_end = (row_j_it == A.matrix.end());
         if (row_j_it_reached_end)
         {
             row_i_it++;
             row_j_it = row_i_it+1;
         }
 
+        row_i_it_reached_end = (row_i_it == A.matrix.end());
+        row_j_it_reached_end = (row_j_it == A.matrix.end());
+        keep_triangulating = !row_i_it_reached_end && !row_j_it_reached_end;
     }
 
 

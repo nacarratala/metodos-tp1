@@ -37,7 +37,7 @@ private:
 
     int findUpperBoundColumn();
 
-    friend class metnum;
+    friend class Metnum;
 public:
     LILMatrix();
 

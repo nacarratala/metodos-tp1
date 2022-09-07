@@ -8,7 +8,7 @@
 #ifndef PAGERANK_METNUM_H
 #define PAGERANK_METNUM_H
 
-class metnum {
+class Metnum {
 
 public:
 
@@ -16,7 +16,7 @@ public:
 
     static void triangulation(LILMatrix &A, std::vector<double> &b);
 
-    void triangulate_rows(lilmatrix_rows_t::iterator row_j, lilmatrix_rows_t::iterator row_i, std::vector<double> &b)
+    static void triangulate_rows(lilmatrix_rows_t::iterator row_j, lilmatrix_rows_t::iterator row_i, std::vector<double> &b);
 };
 
 #endif

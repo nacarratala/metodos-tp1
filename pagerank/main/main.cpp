@@ -5,7 +5,7 @@
 #include "model/COOMatrix.h"
 #include "model/CSRMatrix.h"
 #include "model/CSCMatrix.h"
-#include "model/Gauss.h"
+#include "model/metnum.h"
 
 using namespace std;
 
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     W.multiplicationByScalar(p);
     W.multiplicationByTriangularMatrix(D);
     W.identitySubstractSelf();
-    Gauss::gaussianElimination(W, e);
+    metnum::gaussianElimination(W, e);
 //    ofstream Output;
 //    Output.open("/Users/nacarratala/Desktop/test.txt");
 //    Output << "W" << "\n";

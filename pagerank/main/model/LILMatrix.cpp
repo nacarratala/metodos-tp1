@@ -16,11 +16,11 @@ LILMatrix::LILMatrix() :
         m_size(0) {
 }
 
-LILMatrix::LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size) :
-        m_rows(rows),
-        m_columns(columns),
-        matrix(m_rows_t),
-        m_size(size){}
+//LILMatrix::LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size) :
+//        m_rows(rows),
+//        m_columns(columns),
+//        matrix(m_rows_t),
+//        m_size(size){}
 
 LILMatrix::LILMatrix(int links, ifstream &inputFile) :
         m_rows(0),
@@ -234,7 +234,7 @@ int LILMatrix::columns() {
     return m_columns;
 }
 
-LILMatrix LILMatrix::row(int row)
-{
-
-}
+//LILMatrix LILMatrix::row(int row)
+//{
+//
+//}

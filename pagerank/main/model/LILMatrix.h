@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 
+
 using namespace std;
 
 #ifndef PAGERANK_LILMATRIX_H
 #define PAGERANK_LILMATRIX_H
+
+class mentnum; // FORWARD DECLARATION
 
 using lilmatrix_value_t = std::pair<int, double>;
 using lilmatrix_cols_t = std::vector<lilmatrix_value_t>;
@@ -18,6 +21,8 @@ class LILMatrix {
 
 
 private:
+
+//    LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size);
 
     lilmatrix_rows_t matrix;
     int m_rows;
@@ -32,6 +37,7 @@ private:
 
     int findUpperBoundColumn();
 
+    friend class metnum;
 public:
     LILMatrix();
 

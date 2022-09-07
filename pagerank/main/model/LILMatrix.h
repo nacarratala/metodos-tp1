@@ -24,6 +24,8 @@ private:
 
 //    LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size);
 
+
+
     lilmatrix_rows_t matrix;
     int m_rows;
     int m_columns;
@@ -37,11 +39,15 @@ private:
 
     int findUpperBoundColumn();
 
+    void debug_print();
+
     friend class Metnum;
 public:
     LILMatrix();
 
     LILMatrix(int size, ifstream &inputFile);
+
+    LILMatrix(const std::vector<std::vector<double>> &matrix_vec);
 
     int size();
 

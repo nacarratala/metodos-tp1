@@ -40,15 +40,16 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
         auto a_ii = col_it_i->second;
         m = a_ji / a_ii ;
     }
+    b[row_j] = b[row_j] - m * b[row_i];
 
-    bool keep_row_transformation = (!cols_row_i_reached_end || !cols_row_j_reached_end) && (m != 0.0);
-
+    bool keep_row_transformation = (!cols_row_i_reached_end)  && (m != 0.0);
     while(keep_row_transformation)
     {
+        row_i = row_i_it->first;
+        row_j = row_j_it ->first;
+
         col_row_i = col_it_i->first;
-        col_row_j = col_it_j->first;
-
-
+        if (!cols_row_j_reached_end) col_row_j = col_it_j->first;
 
 
 //        if (col_row_j < row_i_it ->first)
@@ -59,7 +60,23 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
 //            row_j_it->second.erase(col_it_j);
 //        }
 //        else if (col_row_j  == col_row_i )
-        if (col_row_j == col_row_i ) {
+        if (cols_row_j_reached_end || col_row_j > col_row_i)
+        {
+            auto a_jk = col_it_i->second;
+            auto new_a_jk = (-m) * a_jk;
+            auto element = make_pair(col_it_i->first,new_a_jk);
+            row_j_it->second.insert(col_it_j, element);
+            A.m_size++;
+
+
+            //TODO: chequear que si colt_it_j esta aputando al nuevo elemento o al siguiente del nuevo, tal vez haya que avanzarlo
+            col_it_i++;
+            col_it_j++;
+
+
+        }
+        // CASO DONDE LA RESTADORA ES MAYOR QUE LA RESTADA
+        else if (col_row_j == col_row_i ) {
             auto a_jk = col_it_j->second;
             auto a_ik = col_it_i->second;
             auto new_a_jk = a_jk - m * a_ik;
@@ -68,59 +85,28 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
             if (new_a_jk == 0)
             {
                 row_j_it->second.erase(col_it_j);
+                A.m_size--;
             }
             else
             {
                 col_it_j->second = new_a_jk;
+                col_it_j++;
             }
 
-            col_row_i++;
-            col_row_j++;
+            col_it_i++;
+
 
         }
-        else if (col_row_j > col_row_i)
-        {
-            auto a_ji = col_it_i->second;
-            col_it_j->second = a_ji * (-1);
-            row_j_it->second.insert(col_it_j, make_pair(col_it_i->first,a_ji));
-            //TODO: chequear que si colt_it_j esta aputando al nuevo elemento o al siguiente del nuevo, tal vez haya que avanzarlo
-            col_row_i++;
-            col_row_j++;
-
-        }
-        // CASO DONDE LA RESTADORA ES MAYOR QUE LA RESTADA
         else
         {
-            col_row_j++;
+            col_it_j++;
         }
 
         cols_row_i_reached_end = (col_it_i == row_i_it->second.end());
         cols_row_j_reached_end = (col_it_j == row_j_it->second.end());
-        keep_row_transformation = (!cols_row_i_reached_end || !cols_row_j_reached_end);
+        keep_row_transformation = (!cols_row_i_reached_end);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 
@@ -156,15 +142,18 @@ void Metnum::triangulation(LILMatrix& A, vector<double>& b){
 
         triangulate_rows(A, row_j_it, row_i_it, b);
 
+//        A.debug_print();
+//        std::cout << "==================================================" << std::endl;
+
+        row_j_it++;
         row_j_it_reached_end = (row_j_it == A.matrix.end());
         if (row_j_it_reached_end)
         {
             row_i_it++;
             row_j_it = row_i_it+1;
         }
-
-        row_i_it_reached_end = (row_i_it == A.matrix.end());
         row_j_it_reached_end = (row_j_it == A.matrix.end());
+        row_i_it_reached_end = (row_i_it == A.matrix.end());
         keep_triangulating = !row_i_it_reached_end && !row_j_it_reached_end;
     }
 

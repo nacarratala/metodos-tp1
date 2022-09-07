@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     fileInput >> pages >> links;
     LILMatrix W(links, fileInput);
     vector<double> D(pages);
-    for (int i = 0; i <= pages; i++) {
+    for (int i = 0; i < pages; i++) {
         double pageGrade = W.getPageGrade(i);
         double probability = (1 / pageGrade);
         D[i] = pageGrade == 0 ? 0 : probability;

@@ -16,6 +16,23 @@ LILMatrix::LILMatrix() :
         m_size(0) {
 }
 
+
+
+LILMatrix::LILMatrix(const std::vector<std::vector<double>> &matrix_vec) :
+        m_rows(matrix_vec.size()),
+        m_columns(matrix_vec[0].size()),
+        matrix(lilmatrix_rows_t(0)),
+        m_size(0) {
+
+    for (int i = 0; i < matrix_vec.size(); ++i)
+    {
+        for (int j = 0; j < matrix_vec[i].size(); ++j)
+        {
+            setValue(i, j, matrix_vec[i][j]);
+        }
+    }
+}
+
 //LILMatrix::LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size) :
 //        m_rows(rows),
 //        m_columns(columns),
@@ -44,6 +61,8 @@ double LILMatrix::getValue(int row, int column) {
     return itCols->second;
 }
 
+
+//TODO: Arreglar este metodo, demasiados parches y la logica es innecesariamente complicada
 void LILMatrix::setValue(int row, int column, double value) {
     assert(row >= 0 && "Row out of bounds");
     assert(column >= 0 && "Column out of bounds");
@@ -52,14 +71,17 @@ void LILMatrix::setValue(int row, int column, double value) {
 
     // Caso donde no hay filas
     if (matrix.empty()) {
+
+        if ( value == 0.0) return;
+
         matrix.push_back(lilmatrix_row_t(row, lilmatrix_cols_t(0)));
         auto &row_elem = matrix.back();
         row_elem.second.emplace_back(column, value);
         // std::cout << "row: " << matrix[0].first  << std::endl;
         // std::cout << "col: " << matrix[0].second[0].first  << std::endl;
         // std::cout << "value: " << matrix[0].second[0].second  << std::endl;
-        m_rows = row;
-        m_columns = column;
+        m_rows =  m_rows > row ? m_rows : row;;
+        m_columns = m_columns > column ? m_columns : column;;
         m_size++;
         return;
     }
@@ -70,8 +92,11 @@ void LILMatrix::setValue(int row, int column, double value) {
 //        itRow = itRow - 1;
 
     // Caso donde hay filas pero no es la buscada (insertamos de forma ordenada)
-    if (itRow->first != row) {
+    if (itRow == matrix.end() || itRow->first != row) {
         // std::cout << itRow-> first << std::endl;
+
+        if (value == 0.0) return;
+
         itRow = matrix.insert(itRow, lilmatrix_row_t(row, lilmatrix_cols_t(0)));
         auto &row_elem = itRow->second;
         row_elem.emplace_back(column, value);
@@ -88,7 +113,8 @@ void LILMatrix::setValue(int row, int column, double value) {
     auto &row_elem = itRow->second;
     auto itCol = findLowerBoundCol(row_elem, column);
     if (itCol == row_elem.end() && value != 0) {
-        row_elem.emplace_back(column, value);
+//        row_elem.emplace_back(column, value);
+        row_elem.insert(itCol, make_pair(column,value));
         m_size++;
         m_columns = m_columns > column ? m_columns : column;
         return;
@@ -232,6 +258,22 @@ int LILMatrix::rows() {
 
 int LILMatrix::columns() {
     return m_columns;
+}
+
+
+void LILMatrix::debug_print()
+{
+    for(int i = 0; i < m_rows; ++i)
+    {
+        for(int j = 0; j < m_columns; ++j)
+        {
+            std::cout << getValue(i, j);
+
+            if (j+1 < m_columns)
+                std::cout << ", ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 //LILMatrix LILMatrix::row(int row)

@@ -38,7 +38,7 @@ void Metnum::triangulate_rows(LILMatrix &A, lilmatrix_rows_t::iterator row_j_it,
     {
         auto a_ji = col_it_j->second;
         auto a_ii = col_it_i->second;
-        double m = a_ji / a_ii ;
+        m = a_ji / a_ii ;
     }
 
     bool keep_row_transformation = (!cols_row_i_reached_end || !cols_row_j_reached_end) && (m != 0.0);

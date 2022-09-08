@@ -112,37 +112,51 @@ void LILMatrix::setValue(int row, int column, double value) {
     // Caso donde se encontro la fila, hay que hacer busqueda binaria en columnas
     auto &row_elem = itRow->second;
     auto itCol = findLowerBoundCol(row_elem, column);
-    if (itCol == row_elem.end() && value != 0) {
-//        row_elem.emplace_back(column, value);
-        row_elem.insert(itCol, make_pair(column,value));
-        m_size++;
-        m_columns = m_columns > column ? m_columns : column;
-        return;
-    }
 
-    if (itCol->first != column && value != 0) {
-        row_elem.insert(itCol, lilmatrix_value_t(column, value));
-        m_size++;
-        m_columns = m_columns > column ? m_columns : column;
-        return;
-    }
-
-    if (itCol->first == column) {
-        if (value != 0) {
+    bool element_found = (itCol != row_elem.end() && itCol->first == column);
+    if (element_found)
+    {
+        if (value != 0)
+        {
             itCol->second = value;
             return;
         }
+
         row_elem.erase(itCol);
         m_size--;
-        if (column == m_columns) {
+        if (column == m_columns)
+        {
             m_columns = findUpperBoundColumn();
         }
-        if (row_elem.empty()) {
+        if (row_elem.empty())
+        {
             matrix.erase(findLowerBoundRow(row));
             if (m_rows == row)
                 m_rows = findUpperBoundRow();
         }
     }
+    else
+    {
+        if ( (itCol == row_elem.end() || itCol->first != column ) && value != 0)
+        {
+//        row_elem.emplace_back(column, value);
+            row_elem.insert(itCol, lilmatrix_value_t(column,value));
+            m_size++;
+            m_columns = m_columns > column ? m_columns : column;
+            return;
+        }
+
+//        else if (itCol->first != column && value != 0)
+//        {
+//            row_elem.insert(itCol, lilmatrix_value_t(column, value));
+//            m_size++;
+//            m_columns = m_columns > column ? m_columns : column;
+//            return;
+//        }
+    }
+
+
+
 }
 
 int LILMatrix::getPageGrade(int column) {

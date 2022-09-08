@@ -21,10 +21,11 @@ CSRMatrix::CSRMatrix(int rows, int columns) :
 
 
 /*
-Busqueda binaria sobre el indice con la columna del elemento 
+Busqueda binaria sobre el indice con la columna del elemento
 */
 vector<int>::iterator CSRMatrix::search_data_column_it(int row_first_index, int row_end_index, int column)
 {
+
     /* Busqueda binaria en los indices de columnas en el rango asignado a la fila*/
 	return std::lower_bound(
             m_data_column.begin() + row_first_index,
@@ -33,7 +34,7 @@ vector<int>::iterator CSRMatrix::search_data_column_it(int row_first_index, int 
 }
 
 
-int CSRMatrix::row_elements_count(int row) 
+int CSRMatrix::row_elements_count(int row)
 {
 	return m_row_index[row+1] - m_row_index[row];
 }
@@ -169,9 +170,10 @@ void CSRMatrix::setValue(int row, int column, int value)
     auto first_index = row_first_index(row);
     auto end_index = row_end_index(row);
 
-    auto data_column_end_it = m_row_index.begin() + end_index;
+    auto data_column_end_it = m_data_column.begin() + end_index;
     auto data_column_it = search_data_column_it(first_index, end_index, column);
-    bool found_element = (data_column_it != data_column_end_it && (*data_column_it) == column);
+    bool is_end_iterator = (data_column_it == data_column_end_it);
+    bool found_element = (!is_end_iterator && (*data_column_it) == column);
     int elem_index = std::distance(m_data_column.begin(), data_column_it);
 
     if (found_element)
@@ -186,19 +188,19 @@ void CSRMatrix::setValue(int row, int column, int value)
 }
 
 
-int CSRMatrix::size() 
+int CSRMatrix::size()
 {
 	return m_data.size();
 }
 
 
-int CSRMatrix::rows() 
+int CSRMatrix::rows()
 {
 	return m_rows;
 }
 
 
-int CSRMatrix::columns() 
+int CSRMatrix::columns()
 {
 	return m_columns;
 }

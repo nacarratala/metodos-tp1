@@ -47,7 +47,7 @@ LILMatrix::LILMatrix(int links, ifstream &inputFile) :
     for (int i = 0; i < links; i++) {
         int srcPage, dstPage;
         inputFile >> srcPage >> dstPage;
-        setValue(dstPage-1, srcPage-1, 1);
+        setValue(srcPage-1, dstPage-1, 1);
     }
 }
 
@@ -159,10 +159,10 @@ void LILMatrix::setValue(int row, int column, double value) {
 
 }
 
-int LILMatrix::getPageGrade(int column) {
+int LILMatrix::getPageGrade(int page) {
     int res = 0;
-    for (int i = 0; i < matrix.size(); i++) {
-        res += getValue(i, column);
+    for (int i = 0; i < m_columns; i++) {
+        res += getValue(page, i);
     }
     return res;
 }
@@ -223,12 +223,19 @@ void LILMatrix::multiplicationByScalar(double scalar) {
     }
 }
 
-void LILMatrix::multiplicationByTriangularMatrix(vector<double> triangularMatrix) {
-    for (int i = 0; i < matrix.size(); i++) {
-        for (int j = 0; j < matrix[i].second.size(); j++) {
-            matrix[i].second[j].second = matrix[i].second[j].second * triangularMatrix[i];
+void LILMatrix::multiplicationByDiagonalMatrix(vector<double> triangularMatrix) {
+    for (int i = 0; i < m_columns; ++i) {
+        for (int j = 0; j < m_rows; ++j) {
+            auto value = triangularMatrix[i] * getValue(j,i);
+            setValue(j, i, value);
         }
     }
+//    for (int i = 0; i < matrix.size(); i++) {
+//        auto hasZero = false;
+//        for (int j = 0; j < matrix[i].second.size(); j++) {
+//            matrix[i].second[j].second = matrix[i].second[j].second * triangularMatrix[i];
+//        }
+//    }
 }
 
 void LILMatrix::identitySubstractSelf() {

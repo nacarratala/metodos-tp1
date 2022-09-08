@@ -10,7 +10,7 @@ using namespace std;
 #ifndef PAGERANK_LILMATRIX_H
 #define PAGERANK_LILMATRIX_H
 
-class mentnum; // FORWARD DECLARATION
+class Gauss; // FORWARD DECLARATION
 
 using lilmatrix_value_t = std::pair<int, double>;
 using lilmatrix_cols_t = std::vector<lilmatrix_value_t>;
@@ -41,7 +41,7 @@ private:
 
     void debug_print();
 
-    friend class Metnum;
+    friend class Gauss;
 public:
     LILMatrix();
 
@@ -63,7 +63,7 @@ public:
 
     void multiplicationByScalar(double scalar);
 
-    void multiplicationByTriangularMatrix(vector<double> triangularMatrix);
+    void multiplicationByDiagonalMatrix(vector<double> triangularMatrix);
 
     void identitySubstractSelf();
 };

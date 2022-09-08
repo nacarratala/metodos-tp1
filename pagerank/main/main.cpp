@@ -1,13 +1,25 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "model/DOKMatrix.h"
 #include "model/LILMatrix.h"
 #include "model/COOMatrix.h"
 #include "model/CSRMatrix.h"
 #include "model/CSCMatrix.h"
-#include "model/Metnum.h"
+#include "model/Gauss.h"
 
 using namespace std;
+
+void normalizeVector(vector<double>* vector){
+    double elementsRaisedSumatory = 0;
+    for (double i : *vector){
+        elementsRaisedSumatory += i * i;
+    }
+    double module = sqrt(elementsRaisedSumatory);
+    for (double & i : *vector){
+        i = i / module;
+    }
+}
 
 int main(int argc, char **argv) {
     if (argc != 3) {
@@ -25,8 +37,7 @@ int main(int argc, char **argv) {
     vector<double> D(pages);
     for (int i = 0; i < pages; i++) {
         double pageGrade = W.getPageGrade(i);
-        double probability = (1 / pageGrade);
-        D[i] = pageGrade == 0 ? 0 : probability;
+        D[i] = pageGrade == 0 ? 0 : pageGrade;
     }
     vector<double> z(pages);
     for (int i = 0; i < pages; i++) {
@@ -35,23 +46,28 @@ int main(int argc, char **argv) {
     }
     vector<double> e(pages, 1);
     W.multiplicationByScalar(p);
-    W.multiplicationByTriangularMatrix(D);
+    W.multiplicationByDiagonalMatrix(D);
     W.identitySubstractSelf();
-    Metnum::gaussianElimination(W, e);
-//    ofstream Output;
-//    Output.open("/Users/nacarratala/Desktop/test.txt");
-//    Output << "W" << "\n";
+    auto res = Gauss::gaussianElimination(W, e);
+    normalizeVector(&res);
+    ofstream Output;
+    Output.open(string(inputFile) + ".out");
+    //Output.open("/Users/nacarratala/Desktop/test.txt");
+    Output << "Result" << "\n";
+    for (double re : res){
+        Output << re << "\n";
+    }
 //    Output << W.size() << "\n";
 //    Output << W.columns() << "\n";
 //    Output << W.rows() << "\n";
 //    Output << "\n" << "\n";
 //    Output.close();
-
-    std::cout << "W" << std::endl;
-    std::cout << W.size() << std::endl;
-    std::cout << W.columns() << std::endl;
-    std::cout << W.rows() << std::endl;
-    std::cout << std::endl;
+//
+//    std::cout << "W" << std::endl;
+//    std::cout << W.size() << std::endl;
+//    std::cout << W.columns() << std::endl;
+//    std::cout << W.rows() << std::endl;
+//    std::cout << std::endl;
     return 0;
 
 }

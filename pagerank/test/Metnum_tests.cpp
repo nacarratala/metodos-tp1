@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "model/Metnum.h"
+#include "model/Gauss.h"
 #include "model/LILMatrix.h"
 /**
  * Test simple básico
@@ -108,7 +108,7 @@ TEST(metnum_tp1_Metnmum, Metnum_triangulation_stair_matrix_3_3)
 
     std::vector<double> b = {1.0, 2.0, 3.0};
 
-    Metnum::triangulation(A, b);
+    Gauss::triangulation(A, b);
     EXPECT_EQ(A.rows(), 3);
     EXPECT_EQ(A.columns(), 3);
     EXPECT_EQ(A.size(), 3);
@@ -138,7 +138,7 @@ TEST(metnum_tp1_Metnmum, Metnum_triangulation_stair_matrix_5_5)
 
     std::vector<double> b = {1.0, 2.0, 3.0, 4.0, 5.0};
 
-    Metnum::triangulation(A, b);
+    Gauss::triangulation(A, b);
     EXPECT_EQ(A.rows(), 5);
     EXPECT_EQ(A.columns(), 5);
     EXPECT_EQ(A.size(), 5);
@@ -169,7 +169,7 @@ TEST(metnum_tp1_Metnmum, Metnum_triangulation_usm_example)
 
     std::vector<double> b = {5, 16, 22, 15};
 
-    Metnum::triangulation(A, b);
+    Gauss::triangulation(A, b);
     EXPECT_EQ(A.rows(), 4);
     EXPECT_EQ(A.columns(), 4);
     EXPECT_EQ(A.size(), 10);

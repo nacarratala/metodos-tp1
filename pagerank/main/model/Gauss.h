@@ -5,10 +5,10 @@
 #include "model/LILMatrix.h"
 
 
-#ifndef PAGERANK_METNUM_H
-#define PAGERANK_METNUM_H
+#ifndef PAGERANK_GAUSS_H
+#define PAGERANK_GAUSS_H
 
-class Metnum {
+class Gauss {
 
 public:
 

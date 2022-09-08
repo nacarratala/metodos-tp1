@@ -54,10 +54,10 @@ LILMatrix::LILMatrix(int links, ifstream &inputFile) :
 double LILMatrix::getValue(int row, int column) {
     auto itRows = findLowerBoundRow(row);
     // std::cout << "row: " << itRows->first << std::endl;
-    if (itRows->first != row) return 0;
+    if (matrix.end() == itRows || itRows->first != row) return 0;
     auto itCols = findLowerBoundCol(itRows->second, column);
     // std::cout << "col: " << itCols->first << std::endl;
-    if (itCols->first != column) return 0;
+    if (itRows->second.end() == itCols || itCols->first != column) return 0;
     return itCols->second;
 }
 

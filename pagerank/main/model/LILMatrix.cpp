@@ -80,8 +80,8 @@ void LILMatrix::setValue(int row, int column, double value) {
         // std::cout << "row: " << matrix[0].first  << std::endl;
         // std::cout << "col: " << matrix[0].second[0].first  << std::endl;
         // std::cout << "value: " << matrix[0].second[0].second  << std::endl;
-        m_rows =  m_rows > row ? m_rows : row;;
-        m_columns = m_columns > column ? m_columns : column;;
+        m_rows =  m_rows > (row+1) ? m_rows : (row+1) ;;
+        m_columns = m_columns > (column+1) ? m_columns : (column+1) ;;
         m_size++;
         return;
     }
@@ -103,8 +103,8 @@ void LILMatrix::setValue(int row, int column, double value) {
         // std::cout << "row: " << itRow->first << std::endl;
         // std::cout << "col: " << itRow->second[0].first  << std::endl;
         // std::cout << "value: " << itRow->second[0].second  << std::endl;
-        m_rows = m_rows > row ? m_rows : row;
-        m_columns = m_columns > column ? m_columns : column;
+        m_rows = m_rows > (row+1)  ? m_rows : (row+1) ;
+        m_columns = m_columns > (column+1)  ? m_columns : (column+1) ;
         m_size++;
         return;
     }
@@ -124,15 +124,15 @@ void LILMatrix::setValue(int row, int column, double value) {
 
         row_elem.erase(itCol);
         m_size--;
-        if (column == m_columns)
+        if (column+1 == m_columns)
         {
-            m_columns = findUpperBoundColumn();
+            m_columns = findUpperBoundColumn() +1;
         }
         if (row_elem.empty())
         {
             matrix.erase(findLowerBoundRow(row));
-            if (m_rows == row)
-                m_rows = findUpperBoundRow();
+            if (m_rows == row+1)
+                m_rows = findUpperBoundRow() +1;
         }
     }
     else
@@ -142,7 +142,7 @@ void LILMatrix::setValue(int row, int column, double value) {
 //        row_elem.emplace_back(column, value);
             row_elem.insert(itCol, lilmatrix_value_t(column,value));
             m_size++;
-            m_columns = m_columns > column ? m_columns : column;
+            m_columns = m_columns > (column+1)  ? m_columns : (column+1) ;
             return;
         }
 

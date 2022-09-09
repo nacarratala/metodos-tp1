@@ -212,9 +212,9 @@ void LILMatrix::multiplicationByScalar(double scalar) {
 }
 
 void LILMatrix::multiplicationByDiagonalMatrix(vector<double> triangularMatrix) {
-
-
-
+    for (auto &i : matrix)
+        for (auto &j : i.second)
+            j.second = triangularMatrix[j.first] * getValue(i.first, j.first);
 // --- SECOND IMPLEMENTATION ---
 //    for (int i = 0; i < m_columns; ++i) {
 //        for (int j = 0; j < m_rows; ++j) {

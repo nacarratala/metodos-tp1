@@ -23,14 +23,9 @@ LILMatrix::LILMatrix(const std::vector<std::vector<double>> &matrix_vec) :
         m_columns(matrix_vec[0].size()),
         matrix(lilmatrix_rows_t(0)),
         m_size(0) {
-
     for (int i = 0; i < matrix_vec.size(); ++i)
-    {
         for (int j = 0; j < matrix_vec[i].size(); ++j)
-        {
             setValue(i, j, matrix_vec[i][j]);
-        }
-    }
 }
 
 //LILMatrix::LILMatrix(int rows, int columns, lilmatrix_rows_t &m_rows_t, int size) :
@@ -161,9 +156,8 @@ void LILMatrix::setValue(int row, int column, double value) {
 
 int LILMatrix::getPageGrade(int page) {
     int res = 0;
-    for (int i = 0; i < m_columns; i++) {
+    for (int i = 0; i < m_columns; i++)
         res += getValue(page, i);
-    }
     return res;
 }
 
@@ -192,20 +186,16 @@ lilmatrix_cols_t::iterator LILMatrix::findLowerBoundCol(lilmatrix_cols_t &cols, 
 }
 
 int LILMatrix::findUpperBoundRow() {
-    if (matrix.empty())
-        return 0;
+    if (matrix.empty()) return 0;
     return matrix.end()->first;
 }
 
 int LILMatrix::findUpperBoundColumn() {
     auto maxColumn = 0;
-    for (auto &i: matrix) {
-        for (auto &j: i.second) {
-            if (j.first > maxColumn) {
+    for (auto &i: matrix)
+        for (auto &j: i.second)
+            if (j.first > maxColumn)
                 maxColumn = j.first;
-            }
-        }
-    }
     return maxColumn;
 }
 
@@ -216,23 +206,14 @@ void LILMatrix::multiplicationByScalar(double scalar) {
         m_columns = 0;
         m_rows = 0;
     }
-    for (auto &i: matrix) {
-        for (auto &j: i.second) {
+    for (auto &i: matrix)
+        for (auto &j: i.second)
             j.second = j.second * scalar;
-        }
-    }
 }
 
 void LILMatrix::multiplicationByDiagonalMatrix(vector<double> triangularMatrix) {
 
-    for (auto &i : matrix) {
-        for (auto &j : i.second) {
-            auto currentRow = i.first;
-            auto currentColumn = j.first;
-            auto value = triangularMatrix[currentColumn] * getValue(currentRow, currentColumn);
-            setValue(currentRow, currentColumn, value);
-        }
-    }
+
 
 // --- SECOND IMPLEMENTATION ---
 //    for (int i = 0; i < m_columns; ++i) {
@@ -252,31 +233,16 @@ void LILMatrix::multiplicationByDiagonalMatrix(vector<double> triangularMatrix) 
 }
 
 void LILMatrix::identitySubstractSelf() {
-//    for (int i = 0; i < matrix.size(); i++) {
-//        for (int j = 0; j < matrix[i].second.size(); j++) {
-//            if (i == j) {
-//                matrix[i].second[j].second = 1 - matrix[i].second[j].second;
-//            } else {
-//                matrix[i].second[j].second = (-1) * matrix[i].second[j].second;
-//            }
-//        }
-//    }
-    //TODO: AProvechar la estructura LIL para que sea mas performante
-    //El codigo anterior no hace lo que tiene que hacer
-    for (int i = 0; i < m_rows; ++i) {
-        for (int j = 0; j < m_columns; ++j) {
-            if (i == j)
-            {
-                auto value = 1 - getValue(i,j);
-                setValue(i, j, value);
-            }
-            else
-            {
-                auto value = (-1) * getValue(i,j);
-                setValue(i, j, value);
-            }
-        }
-    }
+    for (auto& i : matrix)
+        for (auto &j: i.second)
+            setValue(
+                    i.first,
+                    j.first,
+                    (-1) * getValue(i.first, j.first)
+            );
+    for (int k = 0; k < m_columns; k++)
+        setValue(k,k,1); // considering always zero values in the self diagonal
+    //setValue(k,k, 1 - getValue(k,k)); // considering nonzero values in the self diagonal
 }
 
 
@@ -302,9 +268,7 @@ void LILMatrix::debug_print()
         for(int j = 0; j < m_columns; ++j)
         {
             std::cout << getValue(i, j);
-
-            if (j+1 < m_columns)
-                std::cout << ", ";
+            if (j+1 < m_columns) std::cout << ", ";
         }
         std::cout << std::endl;
     }

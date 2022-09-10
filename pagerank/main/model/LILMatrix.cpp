@@ -150,8 +150,6 @@ void LILMatrix::setValue(int row, int column, double value) {
 //        }
     }
 
-
-
 }
 
 int LILMatrix::getPageGrade(int page) {
@@ -215,21 +213,6 @@ void LILMatrix::multiplicationByDiagonalMatrix(vector<double> triangularMatrix) 
     for (auto &i : matrix)
         for (auto &j : i.second)
             j.second = triangularMatrix[j.first] * getValue(i.first, j.first);
-// --- SECOND IMPLEMENTATION ---
-//    for (int i = 0; i < m_columns; ++i) {
-//        for (int j = 0; j < m_rows; ++j) {
-//            auto value = triangularMatrix[i] * getValue(j,i);
-//            setValue(j, i, value);
-//        }
-//    }
-
-// --- FIRST IMPLEMENTATION ---
-//    for (int i = 0; i < matrix.size(); i++) {
-//        auto hasZero = false;
-//        for (int j = 0; j < matrix[i].second.size(); j++) {
-//            matrix[i].second[j].second = matrix[i].second[j].second * triangularMatrix[i];
-//        }
-//    }
 }
 
 void LILMatrix::identitySubstractSelf() {

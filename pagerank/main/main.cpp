@@ -13,11 +13,10 @@ using namespace std;
 void normalizeVector(vector<double>* vector){
     double elementsRaisedSumatory = 0;
     for (double i : *vector){
-        elementsRaisedSumatory += i * i;
+        elementsRaisedSumatory += i;
     }
-    double module = sqrt(elementsRaisedSumatory);
     for (double & i : *vector){
-        i = i / module;
+        i = i / elementsRaisedSumatory;
     }
 }
 
@@ -54,20 +53,9 @@ int main(int argc, char **argv) {
     Output.open(string(inputFile) + ".out");
     //Output.open("/Users/nacarratala/Desktop/test.txt");
     Output << "Result" << "\n";
-    for (double re : res){
-        Output << re << "\n";
+    for (double element : res){
+        Output << element << "\n";
     }
-//    Output << W.size() << "\n";
-//    Output << W.columns() << "\n";
-//    Output << W.rows() << "\n";
-//    Output << "\n" << "\n";
-//    Output.close();
-//
-//    std::cout << "W" << std::endl;
-//    std::cout << W.size() << std::endl;
-//    std::cout << W.columns() << std::endl;
-//    std::cout << W.rows() << std::endl;
-//    std::cout << std::endl;
     return 0;
 
 }

@@ -13,6 +13,7 @@ class Gauss {
 public:
 
     static std::vector<double> gaussianElimination(LILMatrix& A, std::vector<double>& b);
+    static std::vector<double> gaussianElimination2(LILMatrix& A, std::vector<double>& b);
 
     static void triangulation(LILMatrix &A, std::vector<double> &b);
 
